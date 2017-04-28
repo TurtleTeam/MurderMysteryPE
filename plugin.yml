@@ -1,0 +1,57 @@
+name: MurderMysteryPE
+api: [3.0.0, 3.0.1-ALPHA5]
+main: TurtleTeam\MurderMysteryPE\Main
+version: 0.0.1
+description: "placeholder"
+author: TurtleTeam
+
+commands:
+ join:
+  description: "Join a MurderMystery game"
+  usage: "/join <game>"
+  permission: mmpe.command.join
+  aliases: [enter, game]
+ leave:
+  description: "Leave the current game"
+  usage: "/leave"
+  permission: mmpe.command.leave
+  aliases: [quit, q, exit]
+ games:
+  description: "List all available games"
+  usage: "/games"
+  permission: mmpe.command.list
+ newgame:
+  description: "Activate MurderMystery new game setup mode"
+  usage: "/newgame"
+  permission: mmpe.command.newgame
+
+mmpe.*:
+ default: false
+ children:
+  mmpe.command.*:
+   default: false
+   children:
+    mmpe.command.join:
+     default: true
+     description: "Allows to execute `join` command"
+    mmpe.command.leave:
+     default: true
+     description: "Allows to execute `leave` command"
+    mmpe.command.list:
+     default: true
+     description: "Allows to execute `games` command"
+    mmpe.command.newgame:
+     default: op
+     description: "Allows to execute `newgame` command"
+  mmpe.sign.*:
+   default: false
+   children:
+    mmpe.sign.create:
+     default: op
+     description: "Grants permission to create new game sign"
+    mmpe.sign.destroy:
+     default: op
+     description: "Grants permission to destroy a game sign"
+    mmpe.sign.use:
+     default: true
+     description: "Grants permission to use game sign"

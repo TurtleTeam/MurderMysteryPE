@@ -1,0 +1,8 @@
+# IDE files
+.idea
+
+# Ignore resources
+languages
+config.yml
+signs.yml
+games.yml
