@@ -1,6 +1,6 @@
 name: MurderMysteryPE
 api: [3.0.0, 3.0.1-ALPHA5]
-main: TurtleTeam\MurderMysteryPE\Main
+main: TurtleTeam\MurderMysteryPE\MurderMystery
 version: 0.0.1
 description: "placeholder"
 author: TurtleTeam

@@ -10,6 +10,7 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
 use pocketmine\Player;
+
 class Main extends PluginBase{
 
         /** @var Config $config */
@@ -24,8 +25,10 @@ class Main extends PluginBase{
         /** @var \TurtleTeam\MurderScene[] */
         public $murderScenes = [];
 
-        public function onEnable(){
+        public function onEnable() {
+                $this->getLogger()->info("Enabling...");
                 $this->getServer()->getPluginManager()->registerEvents(new EventListener($this), $this);
-                $this->getLogger()->notice("Enabling...");
+
         }
+
 }
