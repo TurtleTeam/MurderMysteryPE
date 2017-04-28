@@ -27,6 +27,15 @@ function lang(string $key, $params = []): string {
   return MurderMystery::getInstance()->getMessage($key, (array) $params);
 }
 
+/**
+ * Returns a setting value from a config file
+ * @return mixed
+ */
+function var(string $key, $default = null, $nested = false) {
+  if(!$nested) return MurderMystery::getInstance()->getConfig()->get($key, $default);
+  return MurderMystery::getInstance()->getConfig()->getNested($key, $default);
+}
+
 class MurderMystery extends PluginBase {
 
   /** @var MurderMystery */
