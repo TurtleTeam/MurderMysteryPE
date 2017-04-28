@@ -1,5 +1,8 @@
 <?php
 
+namespace TurtleTeam\MurderMysteryPE;
+
+
   /**
    * This class will listen for events and notify the main class.
    *
@@ -17,9 +20,9 @@ class EventListener implements Listener{
         /**
          * EventListener constructor.
          *
-         * @param Main $main
+         * @param MurderMystery $main
          */
-        public function __construct(Main $main){
+        public function __construct(MurderMystery $main){
                 $this->plugin = $main;
         }
 
