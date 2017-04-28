@@ -27,7 +27,7 @@ function lang(string $key, $params = []): string {
   return MurderMystery::getInstance()->getMessage($key, (array) $params);
 }
 
-class MurderMystery extends PluginBase{
+class MurderMystery extends PluginBase {
 
   /** @var MurderMystery */
   private static $instance;
@@ -43,13 +43,14 @@ class MurderMystery extends PluginBase{
   private $lang;
 
   /** @var \TurtleTeam\MurderScene[] */
-  public $murderScenes = [];
+  private $murderScenes = [];
 
   public function onLoad() {
     self::$instance = $this;
 
     $df = $this->getDataFolder();
     @mkdir($this->getDataFolder());
+    $this->saveDefaultConfig();
 
     if(!file_exists($df."messages.yml")) {
       $this->saveResource("messages.yml");
@@ -57,8 +58,6 @@ class MurderMystery extends PluginBase{
 
     // Load messages
     $this->lang = new Config($df."messages.yml");
-    
-    var_dump($this->getLang()->getAll());
   }
 
   public function onEnable() {
@@ -78,12 +77,34 @@ class MurderMystery extends PluginBase{
   }
 
   public function onDisable() {
+    $this->getLogger()->info(lang("plugin.disabling"));
 
+    // Stop all MurderScenes
+    foreach ($this->murderScenes as $scene) {
+      $scene->stop();
+    }
+
+    // Save all MurderScenes settings into array then into file
+    // TODO
+
+    // Save all signs into array then into file
+    // TODO
+
+    $this->getLogger()->info(lang("plugin.disabled"));
   }
 
   private function getLang(): Config {
     return $this->lang;
   }
+
+
+//      .d8b.  d8888b. d888888b 
+//     d8' `8b 88  `8D   `88'   
+//     88ooo88 88oodD'    88    
+//     88~~~88 88~~~      88    
+//     88   88 88        .88.   
+//     YP   YP 88      Y888888b
+
 
   public function getMessage(string $key, array $params = []) {
     $msg = $this->getLang()->getNested($key, $key);
@@ -97,8 +118,37 @@ class MurderMystery extends PluginBase{
     foreach ($params as $key => $value) {
       $msg = str_replace([":$i", "{:$key}", ":$key"], $value, $msg); 
     }
+    $i++;
 
     return $msg;
   }
+
+  /**
+   * @return MurderScene|null
+   */
+  public function getMurderScene($id) {
+    return null; // TODO
+  }
+
+  /** 
+   * @return MurderScene|null
+   */
+  public function getMurderSceneByPlayer(Player $player) {
+    return null; // TODO
+  }
+
+  /**
+   * Returns true if $player is currently playing in one of the scenes
+   * @return bool
+   */
+  public function isParticipator(Player $player): bool {
+    return $this->getMurderSceneByPlayer($player) !== null;
+  }
+
+  public function getAllMurderScenes(): array {
+    return $this->murderScenes;
+  }
+
+  // TODO More functions: addMurderScene, murderSceneExists, removeMurderScene
 
 }
