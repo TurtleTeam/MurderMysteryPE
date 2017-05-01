@@ -7,8 +7,8 @@ version: 0.1.0
 description: "placeholder"
 author: TurtleTeam
 authors: ["corytortoise", "jasonwynn10", "xBeastMode", "Chris-Prime"]
-depend:
- - EconomyAPI
+#depend:
+ #- EconomyAPI
 
 commands:
  join:

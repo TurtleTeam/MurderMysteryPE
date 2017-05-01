@@ -1,9 +1,11 @@
 <?php
-namespace TurtleTeam;
+namespace TurtleTeam\MurderMysteryPE;
 use pocketmine\item\Item;
 use pocketmine\level\Position;
 use pocketmine\Player;
 use pocketmine\utils\Config;
+use TurtleTeam\MurderMysteryPE\Utils\GenUtils;
+
 final class MurderScene{
 
     private static $goldenIngotCounter = -1;
@@ -35,7 +37,7 @@ final class MurderScene{
      */
     public function __construct(Config $config){
         $this->config = $config;
-        self::$goldenIngotCounter = intval($config->get('goldenIngot.spawnDelay'));
+        self::$goldenIngotCounter = intval(_var('goldenIngot.spawnDelay'));
     }
 
     /**
@@ -169,12 +171,12 @@ final class MurderScene{
     public function tickScene(){
         --self::$goldenIngotCounter;
         if(self::$goldenIngotCounter == 0) {
-            $c = count($this->goldIngotPositions);
-            for ($i = 0; $i < $c; ++$i) {
-                $pos = $this->goldIngotPositions[$i];
-                $pos->level->dropItem($pos, Item::get(Item::GOLD_INGOT, 0, 1));
-            }
-            self::$goldenIngotCounter = intval($this->config->get('goldenIngot.spawnDelay'));
+            GenUtils::loop($this->goldIngotPositions, function($key, $val){
+               if($val instanceof Position){
+                   $val->level->dropItem($val, Item::get(Item::GOLD_INGOT, 0, 1));
+               }
+            });
+            self::$goldenIngotCounter = intval(_var('goldenIngot.spawnDelay'));
         }
     }
 }

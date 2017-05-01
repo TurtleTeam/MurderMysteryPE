@@ -1,0 +1,7 @@
+---
+plugin:
+  enabling: "Enabling..."
+  enabled: "Enabled ({:time}s)"
+  disabling: "Disabling..."
+  disabled: "Disabled"
+...

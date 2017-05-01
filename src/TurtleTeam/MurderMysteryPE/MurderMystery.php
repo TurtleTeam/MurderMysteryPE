@@ -11,11 +11,14 @@ namespace TurtleTeam\MurderMysteryPE;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
 use pocketmine\Player;
-use TurtleTeam\MurderScene;
+use TurtleTeam\MurderMysteryPE\Utils\GenUtils;
 
 define("START_TIME", microtime(true));
 // If the plugin is running from the source
 define("DEV_MODE", strpos(__FILE__, "phar://") === false);
+define("AUTHORS", MurderMystery::getInstance()->getDescription()->getAuthors());
+define("VERSION", MurderMystery::getInstance()->getDescription()->getVersion());
+define("VERSION_HISTORY", ['0.0.1', '0.1.0']);
 
 /**
  * Returns a string
@@ -48,19 +51,13 @@ class MurderMystery extends PluginBase{
     /** @var MurderMystery */
     private static $instance;
 
-    public static function getInstance(): MurderMystery{
-        return self::$instance;
-    }
-
     /** @var Config $lang */
     private $lang;
 
-    /** @var \TurtleTeam\MurderScene[] */
+    /** @var MurderScene[] */
     private $murderScenes = [];
 
     public function onLoad(){
-        self::$instance = $this;
-
         $df = $this->getDataFolder();
         @mkdir($this->getDataFolder());
         @mkdir($this->getDataFolder() . 'murderScenes/');
@@ -75,7 +72,10 @@ class MurderMystery extends PluginBase{
     }
 
     public function onEnable(){
+
         $this->getLogger()->info(lang("plugin.enabling"));
+
+        echo GenUtils::formatter("Developed and maintained by %1", AUTHORS);
 
         // Load Games
 
@@ -119,6 +119,10 @@ class MurderMystery extends PluginBase{
 //     88   88 88        .88.   
 //     YP   YP 88      Y888888b
 
+    public static function getInstance(): MurderMystery{
+            return self::$instance;
+    }
+
     /**
      * @param string $key
      * @param array $params
@@ -134,10 +138,9 @@ class MurderMystery extends PluginBase{
         }
 
         $i = 0;
-        foreach ($params as $key => $value) {
+        GenUtils::loop($params, function($key, $value) use (&$msg, &$i){
             $msg = str_replace([":$i", "{:$key}", ":$key"], $value, $msg);
-            ++$i;
-        }
+        }, $i);
 
         return $msg;
     }
@@ -160,8 +163,13 @@ class MurderMystery extends PluginBase{
      * @return MurderScene|null
      */
     public function getMurderSceneByPlayer(Player $player){
-        foreach($this->murderScenes as $scene) if(array_key_exists(spl_object_hash($player), $scene->getParticipators())) return $scene;
-        return null;
+        $returnVal = NULL;
+        GenUtils::loop($this->murderScenes, function($key, $val) use (&$returnVal, &$player){
+            if($val instanceof MurderScene and array_key_exists(spl_object_hash($player), $val->getParticipators())){
+                $returnVal = $val;
+            }
+        });
+        return $returnVal;
     }
 
     /**
