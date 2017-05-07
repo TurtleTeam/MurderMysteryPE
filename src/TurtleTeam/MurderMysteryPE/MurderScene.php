@@ -6,9 +6,15 @@ use pocketmine\Player;
 use pocketmine\utils\Config;
 use TurtleTeam\MurderMysteryPE\Utils\GenUtils;
 
-final class MurderScene{
+class MurderScene{
 
-    private static $goldenIngotCounter = -1;
+    /**
+     * After how many ticks before last ingot spawn should new ingots spawn
+     * If < 0, it's disabled.
+     *
+     * @var int
+     */
+    protected $goldenIngotCounter = -1;
 
     /**
      * @var Player $traitor
@@ -25,19 +31,26 @@ final class MurderScene{
     /** @var Position */
     public $traitorSpawn = NULL, $detectiveSpawn = NULL;
 
-    /** @var Config */
-    private $config;
+    /**
+     * This is unique string identifier for scene. Used to refer it
+     * It's used for example in commands where you have to type scene's id to join
+     * 
+     * @var string 
+     */
+    protected $id;
 
     /**
      * MurderScene constructor.
      *
-     * @TODO parse murder scene config
-     *
+     * @throws InvalidArgumentException
      * @param Config $config
      */
-    public function __construct(Config $config){
-        $this->config = $config;
-        self::$goldenIngotCounter = intval(_var('goldenIngot.spawnDelay'));
+    public function __construct(string $id, Config $data){
+        $this->id = $id;
+        $this->goldenIngotCounter = $data->getNested("goldenIngot.spawnDelay", null) ?? intval(_var('goldenIngot.spawnDelay'));
+        
+        // Validate data,       
+        // Parse Positions
     }
 
     /**

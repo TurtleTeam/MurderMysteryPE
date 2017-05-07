@@ -82,6 +82,24 @@ class MurderMystery extends PluginBase{
         $this->getLogger()->info(GenUtils::formatter("Developed and maintained by %1", AUTHORS)); # This does't seem to be working corectly
 
         // Load Games
+        foreach (new \FilesystemIterator($this->getDataFolder() . "murderScenes") as $path => $file) {
+            if($file->isDot() or $file->isDir()) continue;
+
+            try {
+              // Load Game
+              // MurderScene::__construct will throw an error if the data is invalid or something else fails
+              $game = new MurderScene($file->getBasename(".yml"), new Config($path, Config::YAML, []));
+              $this->addMurderScene($game);
+
+            } catch (\InvalidArgumentException $e) {
+              $this->getLogger()->error("Can not load game from '$file': ".$e->getMessage()); // or attach failed ?
+            }
+        }
+
+        $this->getLogger()->info(lang("plugin.games-loaded", [
+          "games" => implode(", ", array_keys($this->murderScenes)), 
+          "count" => count($this->murderScenes)
+          ]));
 
         // Load Signs
 
@@ -138,7 +156,7 @@ class MurderMystery extends PluginBase{
         if ($msg === $key) {
             $this->getLogger()->debug("Undefined key '$key' " . (!empty($params) ? "(params=" . implode(", ", array_map(function ($key, $el) {
                         return $key . ": '" . $el . "'";
-                    }, $params)) . ")" : ""));
+                    }, array_keys($params), array_values($params))) . ")" : ""));
         }
 
         $i = 0;
@@ -169,7 +187,7 @@ class MurderMystery extends PluginBase{
     public function getMurderSceneByPlayer(Player $player){
         $returnVal = NULL;
         GenUtils::loop($this->murderScenes, function($key, $val) use (&$returnVal, &$player){
-            if($val instanceof MurderScene and array_key_exists(spl_object_hash($player), $val->getParticipators())){
+            if($val instanceof MurderScene and $val->isParticipator($player)){
                 $returnVal = $val;
             }
         });
@@ -215,6 +233,28 @@ class MurderMystery extends PluginBase{
         return $this->murderScenes;
     }
 
-    // TODO More functions: addMurderScene, murderSceneExists, removeMurderScene
+    /**
+     * Adds new MurderScene to available games list. Throws an error if scene already is added
+     *
+     * @throws \InvalidArgumentException
+     * @param MurderScene $scene
+     */
+    public function addMurderScene(MurderScene $scene) {
+        if($this->murderSceneExists($scene)) {
+            throw new \InvalidArgumentException("$scene already attached");
+        } else {
+            $this->murderScenes[$scene->getId()] = $scene;
+        }
+    }
+
+    private function murderSceneExists(MurderScene $scene): bool {
+        return in_array($scene, $this->murderScenes, true) || isset($this->murderScenes[$scene->getId()]);
+    }
+
+    public function removeMurderScene(MurderScene $scene): bool {
+        if(!$this->murderSceneExists($scene)) return false;
+        unset($this->murderScenes[$scene->getId()]);
+        return true;
+    }
 
 }
