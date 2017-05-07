@@ -11,13 +11,12 @@ namespace TurtleTeam\MurderMysteryPE;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\Config;
 use pocketmine\Player;
+use pocketmine\Server;
 use TurtleTeam\MurderMysteryPE\Utils\GenUtils;
 
 define("START_TIME", microtime(true));
 // If the plugin is running from the source
 define("DEV_MODE", strpos(__FILE__, "phar://") === false);
-define("AUTHORS", MurderMystery::getInstance()->getDescription()->getAuthors());
-define("VERSION", MurderMystery::getInstance()->getDescription()->getVersion());
 define("VERSION_HISTORY", ['0.0.1', '0.1.0']);
 
 /**
@@ -58,6 +57,11 @@ class MurderMystery extends PluginBase{
     private $murderScenes = [];
 
     public function onLoad(){
+        self::$instance = $this;
+
+        define("AUTHORS", $this->getDescription()->getAuthors());
+        define("VERSION", $this->getDescription()->getVersion());
+
         $df = $this->getDataFolder();
         @mkdir($this->getDataFolder());
         @mkdir($this->getDataFolder() . 'murderScenes/');
@@ -75,7 +79,7 @@ class MurderMystery extends PluginBase{
 
         $this->getLogger()->info(lang("plugin.enabling"));
 
-        echo GenUtils::formatter("Developed and maintained by %1", AUTHORS);
+        $this->getLogger()->info(GenUtils::formatter("Developed and maintained by %1", AUTHORS)); # This does't seem to be working corectly
 
         // Load Games
 
