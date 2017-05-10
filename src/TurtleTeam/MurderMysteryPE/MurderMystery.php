@@ -79,25 +79,25 @@ class MurderMystery extends PluginBase{
 
         $this->getLogger()->info(lang("plugin.enabling"));
 
-        $this->getLogger()->info(GenUtils::formatter("Developed and maintained by %1", AUTHORS)); # This does't seem to be working corectly
+        $this->getLogger()->info(GenUtils::formatter("Developed and maintained by %1, %2, %3 and %4", AUTHORS));
 
         // Load Games
         foreach (new \FilesystemIterator($this->getDataFolder() . "murderScenes") as $path => $file) {
             if($file->isDot() or $file->isDir()) continue;
 
             try {
-              // Load Game
-              // MurderScene::__construct will throw an error if the data is invalid or something else fails
-              $game = new MurderScene($file->getBasename(".yml"), new Config($path, Config::YAML, []));
-              $this->addMurderScene($game);
+                  // Load Game
+                  // MurderScene::__construct will throw an error if the data is invalid or something else fails
+                $game = new MurderScene($file->getBasename(".yml"), new Config($path, Config::YAML, []));
+                $this->addMurderScene($game);
 
             } catch (\InvalidArgumentException $e) {
-              $this->getLogger()->error("Can not load game from '$file': ".$e->getMessage()); // or attach failed ?
+                $this->getLogger()->error(GenUtils::formatter("Can not load game from '%1': %2", $file, $e->getMessage())); // or attach failed ?
             }
         }
 
         $this->getLogger()->info(lang("plugin.games-loaded", [
-          "games" => implode(", ", array_keys($this->murderScenes)), 
+          "games" => implode(", ", array_keys($this->murderScenes)),
           "count" => count($this->murderScenes)
           ]));
 
@@ -134,11 +134,11 @@ class MurderMystery extends PluginBase{
     }
 
 
-//      .d8b.  d8888b. d888888b 
-//     d8' `8b 88  `8D   `88'   
-//     88ooo88 88oodD'    88    
-//     88~~~88 88~~~      88    
-//     88   88 88        .88.   
+//      .d8b.  d8888b. d888888b
+//     d8' `8b 88  `8D   `88'
+//     88ooo88 88oodD'    88
+//     88~~~88 88~~~      88
+//     88   88 88        .88.
 //     YP   YP 88      Y888888b
 
     public static function getInstance(): MurderMystery{
@@ -203,27 +203,6 @@ class MurderMystery extends PluginBase{
      */
     public function isParticipator(Player $player): bool{
         return $this->getMurderSceneByPlayer($player) !== null;
-    }
-
-    /**
-     * if participator returns int
-     *
-     * 0x00 = not participating
-     * 0x01 = traitor
-     * 0x02 = detective
-     * 0x02 = innocent
-     * 0x03 = unknown
-     *
-     * @param Player $player
-     *
-     * @return int
-     */
-    public function getRole(Player $player){
-        if($this->isParticipator($player)){
-            $scene = $this->getMurderSceneByPlayer($player);
-            return $scene->getRole($player);
-        }
-        return 0x00;
     }
 
     /**
