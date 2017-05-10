@@ -182,14 +182,14 @@ class MurderScene{
      * @TODO send HUD tips to players every X second
      */
     public function tickScene(){
-        --self::$goldenIngotCounter;
-        if(self::$goldenIngotCounter == 0) {
+        --$this->goldenIngotCounter;
+        if($this->goldenIngotCounter == 0) {
             GenUtils::loop($this->goldIngotPositions, function($key, $val){
                if($val instanceof Position){
                    $val->level->dropItem($val, Item::get(Item::GOLD_INGOT, 0, 1));
                }
             });
-            self::$goldenIngotCounter = intval(_var('goldenIngot.spawnDelay'));
+            $this->goldenIngotCounter = intval(_var('goldenIngot.spawnDelay'));
         }
     }
 }
