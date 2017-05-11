@@ -1,11 +1,11 @@
 <?php
 namespace TurtleTeam\MurderMysteryPE;
+use InvalidArgumentException;
 use pocketmine\item\Item;
 use pocketmine\level\Position;
 use pocketmine\Player;
 use pocketmine\utils\Config;
 use TurtleTeam\MurderMysteryPE\Utils\GenUtils;
-
 class MurderScene{
 
     /**
@@ -42,8 +42,10 @@ class MurderScene{
     /**
      * MurderScene constructor.
      *
+     * @param Config $data
+     * @param string $id
+     *
      * @throws InvalidArgumentException
-     * @param Config $config
      */
     public function __construct(string $id, Config $data){
         $this->id = $id;
@@ -51,6 +53,13 @@ class MurderScene{
         
         // Validate data,       
         // Parse Positions
+    }
+
+    /**
+     * @return string
+     */
+    public final function getId(){
+        return $this->id;
     }
 
     /**
@@ -83,10 +92,19 @@ class MurderScene{
      */
     public function getParticipators(){
         $players = $this->innocents;
-        $players[] = $this->traitor;
-        $players[] = $this->detective;
+        $players[spl_object_hash($this->traitor)] = $this->traitor;
+        $players[spl_object_hash($this->detective)] = $this->detective;
 
         return $players;
+    }
+
+    /**
+     * @param Player $player
+     *
+     * @return bool
+     */
+    public function isParticipator(Player $player){
+        return $this->getRole($player) != 0x04;
     }
 
     /**
